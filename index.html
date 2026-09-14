@@ -1,0 +1,220 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fields — Cup Mockup</title>
+<style>
+  :root {
+    --bg:#f4f1ec; --ink:#1b1a18; --muted:#6f6a63; --line:#ded8cf;
+    --accent:#1b1a18; --chip:#e9e4db; color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#151412; --ink:#f0ece5; --muted:#98918a; --line:#2e2b27; --chip:#232019;
+      --accent:#f0ece5; color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font:16px/1.55 ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif; }
+  .wrap { max-width:1080px; margin:0 auto; padding:48px 24px 80px; }
+  header { border-bottom:1px solid var(--line); padding-bottom:18px; margin-bottom:22px; }
+  h1 { margin:0 0 5px; font-size:25px; letter-spacing:-.02em; }
+  .sub { color:var(--muted); font-size:14px; margin:0; }
+
+  [role=tablist] { display:flex; flex-wrap:wrap; gap:6px; }
+  .sizes { margin-bottom:30px; }
+  .designs { margin-bottom:18px; }
+  button[role=tab] { font:inherit; font-size:14px; cursor:pointer; border:1px solid var(--line);
+    background:transparent; color:var(--muted); padding:7px 15px; border-radius:999px;
+    transition:background .15s,color .15s,border-color .15s; }
+  button[role=tab]:hover { color:var(--ink); }
+  button[role=tab][aria-selected=true] { background:var(--ink); border-color:var(--ink);
+    color:var(--bg); }
+  .designs button[role=tab] { font-size:13px; padding:5px 13px; }
+  .designs button[role=tab][aria-selected=true] { background:var(--accent);
+    border-color:var(--accent); color:var(--bg); }
+
+  .controls { display:flex; flex-wrap:wrap; gap:16px 22px; margin:0 0 26px; }
+  .ctl { display:flex; align-items:center; gap:9px; }
+  .ctl > span { font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+                color:var(--muted); font-weight:600; }
+  .seg { display:inline-flex; border:1px solid var(--line); border-radius:8px;
+         overflow:hidden; }
+  .seg button { font:inherit; font-size:13px; cursor:pointer; border:0;
+                background:transparent; color:var(--muted); padding:4px 11px;
+                transition:background .15s,color .15s; }
+  .seg button:hover { color:var(--ink); }
+  .seg button[aria-pressed=true] { background:var(--ink); color:var(--bg); }
+
+  .stage { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
+           gap:40px; align-items:center; }
+  @media (max-width:760px) { .stage { grid-template-columns:1fr; gap:24px; } }
+  cup-viewer { color:var(--ink); border-radius:14px;
+    background:radial-gradient(120% 90% at 50% 8%,
+      color-mix(in srgb, var(--ink) 4%, transparent), transparent 70%); }
+  h2 { font-size:12px; letter-spacing:.11em; text-transform:uppercase;
+       color:var(--muted); margin:0 0 12px; font-weight:600; }
+  dl { display:grid; grid-template-columns:auto 1fr; gap:8px 18px; margin:0 0 26px;
+       font-size:14px; }
+  dt { color:var(--muted); }
+  dd { margin:0; }
+  .note { font-size:13px; color:var(--muted); border-left:2px solid var(--line);
+          padding-left:14px; margin:0 0 22px; }
+  code { font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;
+         background:var(--chip); padding:1px 5px; border-radius:4px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Fields — cup mockup</h1>
+    <p class="sub">Drag to rotate · scroll to zoom</p>
+  </header>
+
+  <div role="tablist" aria-label="Cup size" class="sizes" id="sizes"></div>
+
+  <div class="stage">
+    <cup-viewer id="viewer" autorotate></cup-viewer>
+    <div>
+      <div role="tablist" aria-label="Design" class="designs" id="designs"></div>
+      <div class="controls" id="controls"></div>
+      <h2>Specification</h2>
+      <dl id="spec"></dl>
+      <h2>Design</h2>
+      <p class="note" id="designNote"></p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+const SIZES = [
+  {
+    id: '16oz-cold', label: '16 oz Cold', cup: 'fields-16oz-cold',
+    lid: 'none', material: 'clear', rim: '',
+    ink: '—',
+    spec: [['Size', '16 oz cold, clear PET'],
+           ['Dimensions', '95 mm rim · 60 mm base · 132 mm tall'],
+           ['Ink', '{ink}'],
+           ['Graphic', '{design}'],
+           ['Lid', 'Undecided']],
+    designs: [
+      { id: 'burgundy-flower', label: 'Burgundy Flower',
+        texture: 'textures/burgundy-flower.png',
+        transTexture: 'textures/burgundy-flower-trans.png',
+        ink: 'Vermilion #EF3824 + burgundy #691934, 2-colour on clear',
+        note: 'Projected as one continuous wrap rather than placed cell by cell — it is a decorative pattern, so continuity across the join matters more than every element keeping its exact drawn width. It covers 328° with a gap at the back and bleeds off the base; 1% of the ink folds into the crimp. Note it was drawn 271 mm wide, which exceeds the arc available below about 70 mm up, so at true size it would lap itself by 8–11%. Projecting it angularly avoids that.' },
+      { id: 'logo-green', label: 'Green Logo',
+        texture: 'textures/logo-green.png',
+        transTexture: 'textures/logo-green-trans.png',
+        ink: 'Deep green #1E3522, 1-colour on clear',
+        note: 'Two repeats of the script wordmark, each placed as its own rigid element on its own radial. Taking the pair as one block was not an option \u2014 194 mm of band across a 298 mm radius sags 15.9 mm at the ends, about 68% of the band height. Split in two, each 61 mm repeat sags 1.6 mm, which reads as nothing. Bending them to sit level was also out: the band is tall enough that arcing stretches its top 8.2% wider than its bottom. The repeats sit at \u00b190\u00b0, each covering 90\u00b0 of the cup, which leaves two even 90\u00b0 gaps \u2014 one centred on the front, one centred on the back with the glue seam down its middle and 45\u00b0 of clearance either side. Evenly spaced this way the cup reads the same however it is turned.' },
+      { id: 'logo-poppy', label: 'Poppy Logo',
+        texture: 'textures/logo-poppy.png',
+        transTexture: 'textures/logo-poppy-trans.png',
+        ink: 'Red #FD2E02, 1-colour on clear',
+        note: 'The same two-up wordmark and the same placement as the green treatment \u2014 the two files carry a byte-identical alpha channel, so both bake to the same transmission map and differ only in ink. Two 61 mm repeats, each its own rigid element on its own radial, at \u00b190\u00b0 and covering 90\u00b0 of the cup apiece, with even 90\u00b0 gaps front and back and the seam centred in the back one. Note the ink is #FD2E02, a hotter red than the #EF3824 vermilion this option carried before and the one still running through the Burgundy Flower pattern \u2014 worth a look if the two are meant to match.' },
+      { id: 'blank', label: 'Blank', texture: '', transTexture: '',
+        note: 'The bare cup, awaiting artwork. Dimensions are assumed industry standards, not manufacturer-confirmed — every design is re-projected onto whatever cone it is given, so real specs can be dropped into cup-dieline.py and the artwork re-flows. Design against dielines/fields-16oz-cold-wrap-template.png: 3525 × 1559 px at 300 dpi, where 1 mm on the canvas is 1 mm of arc on the cup.' },
+    ],
+  },
+];
+
+const viewer = document.getElementById('viewer');
+const sizeTabs = document.getElementById('sizes');
+const designTabs = document.getElementById('designs');
+const controlsEl = document.getElementById('controls');
+const specEl = document.getElementById('spec');
+const noteEl = document.getElementById('designNote');
+
+let ASSET_V = '';
+try {
+  const r = await fetch('version.txt', { cache: 'no-store' });
+  if (r.ok) ASSET_V = (await r.text()).trim();
+} catch {}
+const asset = (u) => (u && ASSET_V ? `${u}?v=${ASSET_V}` : u);
+
+let sizeIx = 0, designIx = 0, fill = 'none', lidOn = true;
+
+function segmented(label, items, active, onPick) {
+  const wrap = document.createElement('div');
+  wrap.className = 'ctl';
+  const name = document.createElement('span');
+  name.textContent = label;
+  const seg = document.createElement('div');
+  seg.className = 'seg';
+  for (const it of items) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = it.label;
+    b.setAttribute('aria-pressed', String(it.value === active));
+    b.addEventListener('click', () => onPick(it.value));
+    seg.appendChild(b);
+  }
+  wrap.append(name, seg);
+  return wrap;
+}
+
+function tabs(host, items, active, onPick) {
+  host.replaceChildren(...items.map((it, i) => {
+    const b = document.createElement('button');
+    b.role = 'tab';
+    b.textContent = it.label;
+    b.setAttribute('aria-selected', String(i === active));
+    b.tabIndex = i === active ? 0 : -1;
+    b.addEventListener('click', () => onPick(i));
+    b.addEventListener('keydown', (e) => {
+      const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      const j = (i + d + items.length) % items.length;
+      onPick(j);
+      host.children[j].focus();
+    });
+    return b;
+  }));
+}
+
+function render() {
+  const s = SIZES[sizeIx];
+  const d = s.designs[designIx];
+
+  tabs(sizeTabs, SIZES, sizeIx, (i) => { sizeIx = i; designIx = 0; render(); });
+  tabs(designTabs, s.designs, designIx, (i) => { designIx = i; render(); });
+
+  const controls = [segmented('Fill', [
+    { label: 'None', value: 'none' },
+    { label: 'Light', value: 'light' },
+    { label: 'Dark', value: 'dark' },
+  ], fill, (v) => { fill = v; render(); })];
+  if (s.lid !== 'none') {
+    controls.push(segmented('Lid', [
+      { label: 'On', value: true }, { label: 'Off', value: false },
+    ], lidOn, (v) => { lidOn = v; render(); }));
+  }
+  controlsEl.replaceChildren(...controls);
+
+  viewer.setAttribute('cup', s.cup);
+  viewer.setAttribute('lid', s.lid === 'none' || !lidOn ? 'none' : s.lid);
+  viewer.setAttribute('fill', fill);
+  viewer.setAttribute('texture', asset(d.texture));
+  if (d.transTexture) viewer.setAttribute('transmission-texture', asset(d.transTexture));
+  else viewer.removeAttribute('transmission-texture');
+  if (s.material) viewer.setAttribute('material', s.material);
+  else viewer.removeAttribute('material');
+  if (s.rim) viewer.setAttribute('rim-color', s.rim);
+  else viewer.removeAttribute('rim-color');
+
+  specEl.replaceChildren(...s.spec.flatMap(([k, v]) => {
+    const dt = document.createElement('dt'); dt.textContent = k;
+    const dd = document.createElement('dd');
+    dd.innerHTML = v.replace('{design}', d.label).replace('{ink}', d.ink || s.ink || '—');
+    return [dt, dd];
+  }));
+  noteEl.textContent = d.note;
+}
+
+render();
+
+// loaded last and at the current version, so the element upgrades with every
+// attribute already set — and never against stale cup data
+await import(`./cup-viewer.js?v=${ASSET_V}`);
+</script>
