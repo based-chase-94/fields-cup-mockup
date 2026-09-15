@@ -13,7 +13,6 @@ previews the cup empty, with a light drink and with a dark one.
 
 | Design | Ink |
 | --- | --- |
-| Burgundy Flower | vermilion `#EF3824` + burgundy `#691934` |
 | Green Logo | deep green `#1E3522` |
 | Poppy Logo | red `#FD2E02` |
 | Blank | — |
